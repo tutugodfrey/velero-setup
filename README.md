@@ -1,5 +1,7 @@
 # Velero Setup
 
+[Velero GitHub](https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/README.md)
+
 Install and configure velero backup and restore procedures
 
 The setup.sh file will install velero cli, create velero minio access secret and deploy velero with helm
@@ -26,4 +28,12 @@ After the is success, Create a backup of the nginx-data pv that is created
 ```bash
 kubectl get pv   # get the name of the nginx-data pv
 velero backup create nginx-data-backup --ordered-resources persistentvolumes=pvc-84ee76ff-2317-4034-a621-9349f7f79e64
+```
+
+```bash
+velero backup get
+
+velero backup describe nginx-data-backup
+
+velero backup logs nginx-data-backup
 ```
