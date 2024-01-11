@@ -12,5 +12,3 @@ kubectl apply -f velero-minio-access.yaml -n velero
 # Run the velero helm deployment
 ./velero-helm-deployment.sh
 
-kubectl apply -f nginx-data.yaml
-kubectl apply -f nginx-deployment.yaml
