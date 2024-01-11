@@ -2,6 +2,8 @@
 
 [Velero GitHub](https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/README.md)
 
+[Cluster Backups with Velero & Longhorn](https://platform.cloudogu.com/en/blog/velero-longhorn-backup-restore/)
+
 Install and configure velero backup and restore procedures
 
 The setup.sh file will install velero cli, create velero minio access secret and deploy velero with helm
@@ -55,6 +57,9 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snaps
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-${RELEASE_VERSION}/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
 
+kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=release-5.0"
+kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=release-5.0"
+
 
 
 
@@ -73,4 +78,134 @@ velero restore create --from-backup nginx-data-backup
 velero restore create --from-backup nginx-data-backup --selector target=backup
 
 velero restore create --from-backup nginx-data-backup
+```
+
+
+```bash
+Name:         nginx-data-backup
+Namespace:    velero
+Labels:       velero.io/storage-location=default
+Annotations:  velero.io/resource-timeout=10m0s
+              velero.io/source-cluster-k8s-gitversion=v1.28.4
+              velero.io/source-cluster-k8s-major-version=1
+              velero.io/source-cluster-k8s-minor-version=28
+
+Phase:  Completed
+
+
+Namespaces:
+  Included:  *
+  Excluded:  <none>
+
+Resources:
+  Included:        *
+  Excluded:        <none>
+  Cluster-scoped:  auto
+
+Label selector:  target=backup
+
+Or label selector:  <none>
+
+Storage Location:  default
+
+Velero-Native Snapshot PVs:  auto
+Snapshot Move Data:          false
+Data Mover:                  velero
+
+TTL:  720h0m0s
+
+CSISnapshotTimeout:    10m0s
+ItemOperationTimeout:  4h0m0s
+
+Hooks:  <none>
+
+Backup Format Version:  1.1.0
+
+Started:    2024-01-11 17:41:31 +0000 UTC
+Completed:  2024-01-11 17:41:34 +0000 UTC
+
+Expiration:  2024-02-10 17:41:30 +0000 UTC
+
+Total items to be backed up:  7
+Items backed up:              7
+
+Velero-Native Snapshots: <none included>
+```
+
+
+```bash
+velero backup logs nginx-data-backup
+```
+
+```bash
+...
+...
+...
+time="2024-01-11T17:41:34Z" level=info msg="Backed up 6 items out of an estimated total of 7 (estimate will change throughout the backup)" backup=velero/nginx-data-backup logSource="pkg/backup/backup.go:404" name=local-path-storage namespace= progress= resource=namespaces
+time="2024-01-11T17:41:34Z" level=info msg="Processing item" backup=velero/nginx-data-backup logSource="pkg/backup/backup.go:364" name=velero namespace= progress= resource=namespaces
+time="2024-01-11T17:41:34Z" level=info msg="Backing up item" backup=velero/nginx-data-backup logSource="pkg/backup/item_backupper.go:177" name=velero namespace= resource=namespaces
+time="2024-01-11T17:41:34Z" level=info msg="Backed up 7 items out of an estimated total of 7 (estimate will change throughout the backup)" backup=velero/nginx-data-backup logSource="pkg/backup/backup.go:404" name=velero namespace= progress= resource=namespaces
+time="2024-01-11T17:41:34Z" level=info msg="Summary for skipped PVs: [{\"name\":\"pvc-5b4e7fd2-e403-4eec-b438-193eadf3ff36\",\"reasons\":[{\"approach\":\"volumeSnapshot\",\"reason\":\"no applicable volumesnapshotter found\"}]}]" backup=velero/nginx-data-backup logSource="pkg/backup/backup.go:434"
+time="2024-01-11T17:41:34Z" level=info msg="Backed up a total of 7 items" backup=velero/nginx-data-backup logSource="pkg/backup/backup.go:436" progress=
+```
+
+
+```bash
+root@controlplane:~/velero-setup$ velero restore describe nginx-data-backup-20240111175653
+Name:         nginx-data-backup-20240111175653
+Namespace:    velero
+Labels:       <none>
+Annotations:  <none>
+
+Phase:                       Completed
+Total items to be restored:  1
+Items restored:              1
+
+Started:    2024-01-11 17:56:53 +0000 UTC
+Completed:  2024-01-11 17:56:54 +0000 UTC
+
+Backup:  nginx-data-backup
+
+Namespaces:
+  Included:  all namespaces found in the backup
+  Excluded:  <none>
+
+Resources:
+  Included:        *
+  Excluded:        nodes, events, events.events.k8s.io, backups.velero.io, restores.velero.io, resticrepositories.velero.io, csinodes.storage.k8s.io, volumeattachments.storage.k8s.io, backuprepositories.velero.io
+  Cluster-scoped:  auto
+
+Namespace mappings:  <none>
+
+Label selector:  <none>
+
+Or label selector:  <none>
+
+Restore PVs:  auto
+
+Existing Resource Policy:   <none>
+ItemOperationTimeout:       4h0m0s
+
+Preserve Service NodePorts:  auto
+```
+
+```bash
+root@controlplane:~/velero-setup$ velero restore logs nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="starting restore" logSource="pkg/controller/restore_controller.go:523" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Starting restore of backup velero/nginx-data-backup" logSource="pkg/restore/restore.go:423" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Resource 'persistentvolumes' will be restored at cluster scope" logSource="pkg/restore/restore.go:2295" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Skipping restore of resource because it cannot be resolved via discovery" logSource="pkg/restore/restore.go:2206" resource=clusterclasses.cluster.x-k8s.io restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Skipping restore of resource because it cannot be resolved via discovery" logSource="pkg/restore/restore.go:2206" resource=clusterbootstraps.run.tanzu.vmware.com restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Skipping restore of resource because it cannot be resolved via discovery" logSource="pkg/restore/restore.go:2206" resource=clusters.cluster.x-k8s.io restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Skipping restore of resource because it cannot be resolved via discovery" logSource="pkg/restore/restore.go:2206" resource=clusterresourcesets.addons.cluster.x-k8s.io restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="[debug] Creating factory for /v1, Resource=persistentvolumes in namespace " logSource="pkg/restore/restore.go:1041" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Getting client for /v1, Kind=PersistentVolume" logSource="pkg/restore/restore.go:1007" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=warning msg="Got 0 DataUpload result. Expect one." error="dataupload result number is not expected" logSource="pkg/restore/restore.go:2013" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Dynamically re-provisioning persistent volume because it doesn't have a snapshot and its reclaim policy is Delete." groupResource=persistentvolumes logSource="pkg/restore/restore.go:1333" name=pvc-5b4e7fd2-e403-4eec-b438-193eadf3ff36 namespace= restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Restored 1 items out of an estimated total of 1 (estimate will change throughout the restore)" logSource="pkg/restore/restore.go:755" name=pvc-5b4e7fd2-e403-4eec-b438-193eadf3ff36 namespace= progress= resource=persistentvolumes restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Waiting for all pod volume restores to complete" logSource="pkg/restore/restore.go:635" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Done waiting for all pod volume restores to complete" logSource="pkg/restore/restore.go:651" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Waiting for all post-restore-exec hooks to complete" logSource="pkg/restore/restore.go:655" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="Done waiting for all post-restore exec hooks to complete" logSource="pkg/restore/restore.go:663" restore=velero/nginx-data-backup-20240111175653
+time="2024-01-11T17:56:54Z" level=info msg="restore completed" logSource="pkg/controller/restore_controller.go:581" restore=velero/nginx-data-backup-20240111175653
 ```

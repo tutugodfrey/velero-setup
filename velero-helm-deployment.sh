@@ -7,6 +7,7 @@ helm install velero \
     --namespace=velero \
     --create-namespace \
     --set credentials.existingSecret=velero-minio-access \
+    --set configuration.features=EnableCSI \
     --set configuration.backupStorageLocation[0].provider=aws \
     --set configuration.backupStorageLocation[0].name=default \
     --set configuration.backupStorageLocation[0].bucket=velero \
@@ -14,12 +15,11 @@ helm install velero \
     --set configuration.backupStorageLocation[0].config.s3ForcePathStyle=true \
     --set configuration.backupStorageLocation[0].config.s3Url=https://minio-s3.dev.compliantcloud.com \
     --set configuration.backupStorageLocation[0].config.publicUrl=https://minio-s3.dev.compliantcloud.com \
-    --set snapshotsEnabled=false \
+    --set snapshotsEnabled=true \
     --set "initContainers[0].name=velero-plugin-for-aws" \
     --set "initContainers[0].image=velero/velero-plugin-for-aws:v1.6.0" \
     --set "initContainers[0].volumeMounts[0].mountPath=/target" \
     --set "initContainers[0].volumeMounts[0].name=plugins" \
-    --set configuration.features=EnableCSI \
     --set "initContainers[1].name=velero-plugin-for-csi" \
     --set "initContainers[1].image=velero/velero-plugin-for-csi:v0.4.0" \
     --set "initContainers[1].volumeMounts[0].mountPath=/target" \
