@@ -4,7 +4,8 @@ metadata:
   name: csi-hostpath-snapclass
   labels:
     velero.io/csi-volumesnapshot-class: "true"
-driver: hostpath.csi.k8s.io
+# driver: hostpath.csi.k8s.io
+driver: rancher.io/local-path
 deletionPolicy: Delete
 parameters:
   type: bak
