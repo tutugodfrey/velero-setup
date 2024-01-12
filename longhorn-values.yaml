@@ -1,10 +1,11 @@
 persistence:
   # since we only have one node, we can have only 1 replica
-  defaultClassReplicaCount: 1
+  defaultClassReplicaCount: 2
 
 defaultSettings:
   # This tells Longhorn to use the 'longhorn' bucket of our S3.
-  backupTarget: s3://longhorn@dummyregion/
+  # backupTarget: s3://longhorn@dummyregion/
+  backupTarget: s3://longhorn@us-east-1/
   # The secret where the MinIO credentials are stored.
   backupTargetCredentialSecret: minio-secret
   # Usually Longhorn does not store volumes on the node that it runs on. This setting allows that.
