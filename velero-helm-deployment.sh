@@ -18,13 +18,13 @@ helm install velero \
     --set snapshotsEnabled=true \
     --set configuration.volumeSnapshotLocation[0].provider=aws \
     --set configuration.volumeSnapshotLocation[0].name=default \
-    --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \
-    --set "initContainers[0].name=velero-plugin-for-aws" \
-    --set "initContainers[0].image=velero/velero-plugin-for-aws:v1.6.0" \
-    --set "initContainers[0].volumeMounts[0].mountPath=/target" \
-    --set "initContainers[0].volumeMounts[0].name=plugins" \
-    --set "initContainers[1].name=velero-plugin-for-csi" \
-    --set "initContainers[1].image=velero/velero-plugin-for-csi:v0.4.0" \
-    --set "initContainers[1].volumeMounts[0].mountPath=/target" \
-    --set "initContainers[1].volumeMounts[0].name=plugins" \
+    --set configuration.volumeSnapshotLocation[0].config.region=minio-default \
+    --set initContainers[0].name=velero-plugin-for-aws \
+    --set initContainers[0].image=velero/velero-plugin-for-aws:v1.9.0 \
+    --set initContainers[0].volumeMounts[0].mountPath=/target \
+    --set initContainers[0].volumeMounts[0].name=plugins \
+    --set initContainers[1].name=velero-plugin-for-csi \
+    --set initContainers[1].image=velero/velero-plugin-for-csi:v0.4.0 \
+    --set initContainers[1].volumeMounts[0].mountPath=/target \
+    --set initContainers[1].volumeMounts[0].name=plugins \
     vmware-tanzu/velero
