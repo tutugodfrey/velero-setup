@@ -3,7 +3,6 @@ kind: VolumeSnapshot
 metadata:
   name: nginx-data-snapshot
 spec:
+  volumeSnapshotClassName: longhorn-snapshot-vsc
   source:
     persistentVolumeClaimName: nginx-data
-    # volumeSnapshotContentName:
-  volumeSnapshotClassName: longhorn-snapshot-vsc

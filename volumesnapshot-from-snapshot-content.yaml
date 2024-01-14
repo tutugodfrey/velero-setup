@@ -1,0 +1,8 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: nginx-data-snapshot
+spec:
+  source:
+    volumeSnapshotContentName: nginx-data-snapshotcontent # This
+  # volumeSnapshotClassName: longhorn-snapshot-vsc

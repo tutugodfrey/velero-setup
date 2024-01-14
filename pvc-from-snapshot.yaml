@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-data-from-snapshot
+spec:
+  accessModes:
+  - ReadWriteOnce
+  dataSource:
+    apiGroup: snapshot.storage.k8s.io
+    kind: VolumeSnapshot
+    name: nginx-data-snapshot
+  dataSourceRef:
+    apiGroup: snapshot.storage.k8s.io
+    kind: VolumeSnapshot
+    name: nginx-data-snapshot
+  resources:
+    requests:
+      storage: 200Mi
+  storageClassName: longhorn
+  volumeMode: Filesystem

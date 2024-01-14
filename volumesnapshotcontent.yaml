@@ -3,8 +3,10 @@ kind: VolumeSnapshotContent
 metadata:
   name: nginx-data-snapshotcontent
 spec:
-  driver:
+  driver: driver.longhorn.io
   source:
-  volumeSnapshotRef:
+    snapshotHandle: 89A22EC7-9814-4058-AE89-C9180DCA49DE
   deletionPolicy: Delete
+  sourceVolumeMode: Filesystem
   volumeSnapshotClassName:
+  # volumeSnapshotRef:

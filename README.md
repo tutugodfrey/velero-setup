@@ -209,3 +209,115 @@ time="2024-01-11T17:56:54Z" level=info msg="Waiting for all post-restore-exec ho
 time="2024-01-11T17:56:54Z" level=info msg="Done waiting for all post-restore exec hooks to complete" logSource="pkg/restore/restore.go:663" restore=velero/nginx-data-backup-20240111175653
 time="2024-01-11T17:56:54Z" level=info msg="restore completed" logSource="pkg/controller/restore_controller.go:581" restore=velero/nginx-data-backup-20240111175653
 ```
+
+
+```bash
+root@controlplane:~/velero-setup$ kubectl get pvc nginx-data -o yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    backup.velero.io/must-include-additional-items: "true"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"labels":{"app":"sentry"},"name":"nginx-data","namespace":"default"},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Gi"}},"storageClassName":"longhorn","volumeMode":"Filesystem"}}
+    velero.io/backup-name: nginx-data-backup
+    velero.io/volume-snapshot-name: velero-nginx-data-wl5pk
+    volume.beta.kubernetes.io/storage-provisioner: driver.longhorn.io
+    volume.kubernetes.io/storage-provisioner: driver.longhorn.io
+  creationTimestamp: "2024-01-14T11:38:02Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app: sentry
+    backup.velero.io/must-include-additional-items: "true"
+    target: backup
+    velero.io/backup-name: nginx-data-backup
+    velero.io/restore-name: nginx-data-backup-20240114113800
+    velero.io/volume-snapshot-name: velero-nginx-data-wl5pk
+  name: nginx-data
+  namespace: default
+  resourceVersion: "10521"
+  uid: 26871074-bb39-4f21-aeb5-4b6a63dbd69f
+spec:
+  accessModes:
+  - ReadWriteOnce
+  dataSource:
+    apiGroup: snapshot.storage.k8s.io
+    kind: VolumeSnapshot
+    name: velero-nginx-data-wl5pk
+  dataSourceRef:
+    apiGroup: snapshot.storage.k8s.io
+    kind: VolumeSnapshot
+    name: velero-nginx-data-wl5pk
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
+  volumeMode: Filesystem
+status:
+  phase: Pending
+root@controlplane:~/velero-setup$ 
+root@controlplane:~/velero-setup$ 
+root@controlplane:~/velero-setup$ kubectl get volumesnapshot velero-nginx-data-wl5pk  -o yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  creationTimestamp: "2024-01-14T11:26:10Z"
+  finalizers:
+  - snapshot.storage.kubernetes.io/volumesnapshot-as-source-protection
+  - snapshot.storage.kubernetes.io/volumesnapshot-bound-protection
+  generateName: velero-nginx-data-
+  generation: 1
+  labels:
+    velero.io/backup-name: nginx-data-backup
+  name: velero-nginx-data-wl5pk
+  namespace: default
+  resourceVersion: "8642"
+  uid: b3d653f3-d124-4b85-91ab-2d71a0aec70d
+spec:
+  source:
+    persistentVolumeClaimName: nginx-data
+  volumeSnapshotClassName: longhorn-snapshot-vsc
+status:
+  boundVolumeSnapshotContentName: snapcontent-b3d653f3-d124-4b85-91ab-2d71a0aec70d
+  creationTime: "2024-01-14T11:26:10Z"
+  readyToUse: true
+  restoreSize: 1Gi
+root@controlplane:~/velero-setup$ kubectl get volumesnapshotcontent  -o yaml
+apiVersion: v1
+items:
+- apiVersion: snapshot.storage.k8s.io/v1
+  kind: VolumeSnapshotContent
+  metadata:
+    creationTimestamp: "2024-01-14T11:26:10Z"
+    finalizers:
+    - snapshot.storage.kubernetes.io/volumesnapshotcontent-bound-protection
+    generation: 1
+    labels:
+      velero.io/backup-name: nginx-data-backup
+    name: snapcontent-b3d653f3-d124-4b85-91ab-2d71a0aec70d
+    resourceVersion: "8656"
+    uid: 377defeb-e91c-4cf2-8113-81f90224060e
+  spec:
+    deletionPolicy: Delete
+    driver: driver.longhorn.io
+    source:
+      volumeHandle: pvc-884900f3-237b-4608-b449-fe566c6d7020
+    volumeSnapshotClassName: longhorn-snapshot-vsc
+    volumeSnapshotRef:
+      apiVersion: snapshot.storage.k8s.io/v1
+      kind: VolumeSnapshot
+      name: velero-nginx-data-wl5pk
+      namespace: default
+      resourceVersion: "8627"
+      uid: b3d653f3-d124-4b85-91ab-2d71a0aec70d
+  status:
+    creationTime: 1705231570000000000
+    readyToUse: true
+    restoreSize: 1073741824
+    snapshotHandle: snap://pvc-884900f3-237b-4608-b449-fe566c6d7020/snapshot-b3d653f3-d124-4b85-91ab-2d71a0aec70d
+kind: List
+metadata:
+  resourceVersion: ""
+root@controlplane:~/velero-setup$ 
+```
