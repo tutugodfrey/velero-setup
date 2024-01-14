@@ -1,0 +1,10 @@
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotContent
+metadata:
+  name: nginx-data-snapshotcontent
+spec:
+  driver:
+  source:
+  volumeSnapshotRef:
+  deletionPolicy: Delete
+  volumeSnapshotClassName:
