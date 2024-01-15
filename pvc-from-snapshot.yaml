@@ -8,13 +8,13 @@ spec:
   dataSource:
     apiGroup: snapshot.storage.k8s.io
     kind: VolumeSnapshot
-    name: nginx-data-snapshot
+    name: nginx-data-from-snapshot-content
   dataSourceRef:
     apiGroup: snapshot.storage.k8s.io
     kind: VolumeSnapshot
-    name: nginx-data-snapshot
+    name: nginx-data-from-snapshot-content
   resources:
     requests:
       storage: 200Mi
-  storageClassName: longhorn
+  storageClassName: nfs-client
   volumeMode: Filesystem

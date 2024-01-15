@@ -10,5 +10,6 @@ spec:
   resources:
     requests:
       storage: 200Mi
-  storageClassName: local-path
+  # storageClassName: 
+  storageClassName: nfs-client
   volumeMode: Filesystem

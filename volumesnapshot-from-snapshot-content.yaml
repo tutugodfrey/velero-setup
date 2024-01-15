@@ -1,7 +1,7 @@
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
 metadata:
-  name: nginx-data-snapshot
+  name: nginx-data-from-snapshot-content
 spec:
   source:
     volumeSnapshotContentName: nginx-data-snapshotcontent # This
