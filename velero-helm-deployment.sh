@@ -6,6 +6,10 @@ helm repo update
 helm upgrade --install velero \
     --namespace=velero \
     --create-namespace \
+    --set resources.requests.cpu=2m \
+    --set resources.requests.memory=50Mi \
+    --set resources.limits.cpu=10m \
+    --set resources.limits.memory=100Mi \
     --set credentials.existingSecret=velero-minio-access \
     --set configuration.features=EnableCSI \
     --set configuration.backupStorageLocation[0].provider=aws \
@@ -18,6 +22,10 @@ helm upgrade --install velero \
     --set backupsEnabled=true \
     --set snapshotsEnabled=true \
     --set deployNodeAgent=true \
+    --set nodeAgent.resources.requests.cpu=2m \
+    --set nodeAgent.resources.requests.memory=50Mi \
+    --set nodeAgent.resources.limits.cpu=10m \
+    --set nodeAgent.resources.limits.memory=100Mi \
     --set configuration.volumeSnapshotLocation[0].provider=aws \
     --set configuration.volumeSnapshotLocation[0].name=default \
     --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \
