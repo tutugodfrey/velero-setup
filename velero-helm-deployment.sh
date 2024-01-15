@@ -11,12 +11,13 @@ helm upgrade --install velero \
     --set configuration.backupStorageLocation[0].provider=aws \
     --set configuration.backupStorageLocation[0].name=default \
     --set configuration.backupStorageLocation[0].bucket=velero-backups \
-    # --set configuration.backupStorageLocation[0].bucket=velero \
     --set configuration.backupStorageLocation[0].config.region=minio-default \
     --set configuration.backupStorageLocation[0].config.s3ForcePathStyle=true \
     --set configuration.backupStorageLocation[0].config.s3Url=https://minio-s3.dev.compliantcloud.com \
     --set configuration.backupStorageLocation[0].config.publicUrl=https://minio-s3.dev.compliantcloud.com \
+    --set backupsEnabled=true \
     --set snapshotsEnabled=true \
+    --set deployNodeAgent=true \
     --set configuration.volumeSnapshotLocation[0].provider=aws \
     --set configuration.volumeSnapshotLocation[0].name=default \
     --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \

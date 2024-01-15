@@ -323,3 +323,6 @@ metadata:
   resourceVersion: ""
 root@controlplane:~/velero-setup$ 
 ```
+
+
+    # --set configuration.backupStorageLocation[0].bucket=velero \
