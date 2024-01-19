@@ -4,7 +4,7 @@ metadata:
   labels:
     app: nginx
     velero-backup-target: velero-dev-backup-test
-  name: nginx-data-test
+  name: csi-nginx-data-test
 spec:
   accessModes:
   - ReadWriteOnce
@@ -12,5 +12,5 @@ spec:
     requests:
       storage: 200Mi
   # storageClassName: 
-  storageClassName: nfs-client
+  storageClassName: csi-nfs-client
   volumeMode: Filesystem

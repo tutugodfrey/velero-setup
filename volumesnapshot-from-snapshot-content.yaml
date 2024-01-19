@@ -4,5 +4,6 @@ metadata:
   name: nginx-data-from-snapshot-content
 spec:
   source:
-    volumeSnapshotContentName: nginx-data-snapshotcontent # This
-  # volumeSnapshotClassName: longhorn-snapshot-vsc
+    # volumeSnapshotContentName: nginx-data-snapshotcontent # This
+    persistentVolumeClaimName: csi-nginx-data-test
+  volumeSnapshotClassName: csi-nfs-snapclass

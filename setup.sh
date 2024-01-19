@@ -15,8 +15,18 @@ sleep 20
 # Crete volumesnapshotclass
 kubectl apply -f default-volumesnapshotclass.yaml
 
-sleep 20
+# Install CSI DRIVER NFS
+helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version v4.5.0 --set externalSnapshotter.enabled=true
 
+sleep 20
+kubectl apply -f csi-storage-class.yaml
+
+# Install nfs-subdir-external-provisioner
+# helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+# helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=44.202.240.228 --set nfs.path=/nfs-datadir --set namespace=kube-system
+
+# Install Velero
 VELERO_VERSION=${VELERO_VERSION:-1.12.2}
 wget https://github.com/vmware-tanzu/velero/releases/download/v${VELERO_VERSION}/velero-v${VELERO_VERSION}-linux-amd64.tar.gz
 tar -xvf velero-v${VELERO_VERSION}-linux-amd64.tar.gz
@@ -27,3 +37,5 @@ kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio
 ./velero-helm-deployment.sh
 kubectl apply -f velero-minio-access.yaml -n velero
 
+# Install metric server
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml

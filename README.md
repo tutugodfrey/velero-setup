@@ -64,6 +64,9 @@ kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter
 
 
 
+helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version v4.5.0 --set externalSnapshotter.enabled=true
+
 
 kubectl label pv pvc-19c01e56-00b1-44c7-b0c6-132053332f7a target=backup
 
@@ -81,6 +84,10 @@ velero restore create --from-backup nginx-data-backup --selector target=backup
 
 velero restore create --from-backup nginx-data-backup
 ```
+
+
+velero restore create --from-backup new-backup --include-resources pv,pvc,pod --include-namespaces default --selector target=backup --wait
+velero restore create --from-backup new-backup --include-resources pv,pvc,pod --include-namespaces default --selector target=backup --wait
 
 
 ```bash

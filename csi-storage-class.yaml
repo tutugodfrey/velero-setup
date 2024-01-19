@@ -1,0 +1,11 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-nfs-client
+parameters:
+  server: 44.202.240.228
+  share: /nfs
+provisioner: nfs.csi.k8s.io 
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

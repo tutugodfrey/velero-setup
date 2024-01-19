@@ -16,5 +16,5 @@ spec:
   resources:
     requests:
       storage: 200Mi
-  storageClassName: nfs-client
+  storageClassName: csi-nfs-client
   volumeMode: Filesystem

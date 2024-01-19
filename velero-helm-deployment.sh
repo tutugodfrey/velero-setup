@@ -6,12 +6,21 @@ helm repo update
 helm upgrade --install velero \
     --namespace=velero \
     --create-namespace \
+    --set backupsEnabled=true \
+    --set snapshotsEnabled=true \
+    --set deployNodeAgent=true \
     --set resources.requests.cpu=2m \
     --set resources.requests.memory=50Mi \
     --set resources.limits.cpu=10m \
     --set resources.limits.memory=100Mi \
+    --set nodeAgent.resources.requests.cpu=5m \
+    --set nodeAgent.resources.requests.memory=200Mi \
+    --set nodeAgent.resources.limits.cpu=10m \
+    --set nodeAgent.resources.limits.memory=400Mi \
     --set credentials.existingSecret=velero-minio-access \
+    --set configuration.logLevel=debug \
     --set configuration.features=EnableCSI \
+    --set configuration.defaultSnapshotMoveData=true \
     --set configuration.backupStorageLocation[0].provider=aws \
     --set configuration.backupStorageLocation[0].name=default \
     --set configuration.backupStorageLocation[0].bucket=velero-backups \
@@ -19,15 +28,9 @@ helm upgrade --install velero \
     --set configuration.backupStorageLocation[0].config.s3ForcePathStyle=true \
     --set configuration.backupStorageLocation[0].config.s3Url=https://minio-s3.dev.compliantcloud.com \
     --set configuration.backupStorageLocation[0].config.publicUrl=https://minio-s3.dev.compliantcloud.com \
-    --set backupsEnabled=true \
-    --set snapshotsEnabled=true \
-    --set deployNodeAgent=true \
-    --set nodeAgent.resources.requests.cpu=2m \
-    --set nodeAgent.resources.requests.memory=50Mi \
-    --set nodeAgent.resources.limits.cpu=10m \
-    --set nodeAgent.resources.limits.memory=100Mi \
     --set configuration.volumeSnapshotLocation[0].provider=aws \
     --set configuration.volumeSnapshotLocation[0].name=default \
+    --set configuration.volumeSnapshotLocation[0].bucket=velero-backups \
     --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \
     --set initContainers[0].name=velero-plugin-for-aws \
     --set initContainers[0].image=velero/velero-plugin-for-aws:v1.6.0 \

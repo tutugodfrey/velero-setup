@@ -6,11 +6,11 @@ spec:
   # driver: driver.longhorn.io
   driver: nfs.csi.k8s.io
   source:
-    # snapshotHandle: 89A22EC7-9814-4058-AE89-C9180DCA49DE
-    volumeHandle: pvc-7cc35455-3db1-4a12-b507-fa1d88c92c3f
+    snapshotHandle: e2c83ce5-f0be-46b7-bdc9-e9ce7202599a
+    # volumeHandle: pvc-2f163a00-89f3-4951-911e-2a9ac68005fa
   deletionPolicy: Delete
   sourceVolumeMode: Filesystem
-  volumeSnapshotClassName:
+  volumeSnapshotClassName: csi-nfs-snapclass
   volumeSnapshotRef:
     name: nginx-data-from-snapshot-content
-    namespace: default
+    namespace: dev-tutug
