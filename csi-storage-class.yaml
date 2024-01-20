@@ -5,7 +5,7 @@ metadata:
   name: csi-nfs-client
 parameters:
   server: 44.202.240.228
-  share: /nfs
+  share: /nfs-datadir
 provisioner: nfs.csi.k8s.io 
 reclaimPolicy: Delete
 volumeBindingMode: Immediate

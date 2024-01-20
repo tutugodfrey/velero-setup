@@ -32,7 +32,8 @@ wget https://github.com/vmware-tanzu/velero/releases/download/v${VELERO_VERSION}
 tar -xvf velero-v${VELERO_VERSION}-linux-amd64.tar.gz
 cp velero-v${VELERO_VERSION}-linux-amd64/velero /usr/local/bin/
 
-kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access.txt --dry-run=client -o yaml > velero-minio-access.yaml
+kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access-aws.txt --dry-run=client -o yaml > velero-minio-access.yaml
+# kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access.txt --dry-run=client -o yaml > velero-minio-access.yaml
 # Run the velero helm deployment
 ./velero-helm-deployment.sh
 kubectl apply -f velero-minio-access.yaml -n velero

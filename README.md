@@ -85,10 +85,19 @@ velero restore create --from-backup nginx-data-backup --selector target=backup
 velero restore create --from-backup nginx-data-backup
 ```
 
+```bash
 
 velero restore create --from-backup new-backup --include-resources pv,pvc,pod --include-namespaces default --selector target=backup --wait
 velero restore create --from-backup new-backup --include-resources pv,pvc,pod --include-namespaces default --selector target=backup --wait
 
+    # --set configuration.uploaderType=kopia \
+    # --set configuration.defaultSnapshotMoveData=true \
+    # --set configuration.volumeSnapshotLocation[0].bucket=velero-backups \
+    # --set configuration.volumeSnapshotLocation[0].name=default \
+    # --set configuration.backupStorageLocation[0].config.s3ForcePathStyle=true \
+    # --set configuration.backupStorageLocation[0].config.s3Url=https://minio-s3.dev.compliantcloud.com \
+    # --set configuration.backupStorageLocation[0].config.publicUrl=https://minio-s3.dev.compliantcloud.com \
+```
 
 ```bash
 Name:         nginx-data-backup
