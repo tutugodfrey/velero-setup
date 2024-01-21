@@ -14,6 +14,9 @@
 
 # Crete volumesnapshotclass
 
+sudo apt update; sudo apt install nfs-common -y
+ssh node01 sudo apt update;
+ssh node01 sudo apt install nfs-common -y;
 
 # Install CSI DRIVER NFS
 helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts

@@ -1,0 +1,10 @@
+version: v1
+resourceModifierRules:
+- conditions:
+     groupResource: persistentvolumeclaims
+     namespaces:
+     - dev-tutug
+  patches:
+  - operation: replace
+    path: "/spec/storageClassName"
+    value: "nfs-client"
