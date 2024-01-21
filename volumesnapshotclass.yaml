@@ -10,4 +10,4 @@ driver: nfs.csi.k8s.io
 deletionPolicy: Delete
 parameters:
   server: 44.202.240.228
-  share: /nfs-datadir
+  share: /nfs

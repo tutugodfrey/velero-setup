@@ -11,8 +11,8 @@ helm upgrade --install velero \
     --set deployNodeAgent=true \
     --set resources.requests.cpu=2m \
     --set resources.requests.memory=50Mi \
-    --set resources.limits.cpu=10m \
-    --set resources.limits.memory=100Mi \
+    --set resources.limits.cpu=20m \
+    --set resources.limits.memory=200Mi \
     --set nodeAgent.resources.requests.cpu=5m \
     --set nodeAgent.resources.requests.memory=200Mi \
     --set nodeAgent.resources.limits.cpu=10m \
@@ -20,11 +20,16 @@ helm upgrade --install velero \
     --set credentials.existingSecret=velero-minio-access \
     --set configuration.logLevel=debug \
     --set configuration.features=EnableCSI \
+    --set configuration.uploaderType=kopia \
+    --set configuration.defaultSnapshotMoveData=false \
+    --set configuration.defaultVolumesToFsBackup=false \
     --set configuration.backupStorageLocation[0].provider=aws \
     --set configuration.backupStorageLocation[0].name=default \
     --set configuration.backupStorageLocation[0].bucket=velero-backups-728547773713 \
     --set configuration.backupStorageLocation[0].config.region=us-east-1 \
+    --set configuration.volumeSnapshotLocation[0].name=default \
     --set configuration.volumeSnapshotLocation[0].provider=aws \
+    --set configuration.volumeSnapshotLocation[0].config.bucket=velero-snapshot-728547773713 \
     --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \
     --set initContainers[0].name=velero-plugin-for-aws \
     --set initContainers[0].image=velero/velero-plugin-for-aws:v1.8.0 \

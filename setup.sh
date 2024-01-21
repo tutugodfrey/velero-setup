@@ -1,19 +1,19 @@
 #! /bin/bash
 
 # Install Longhorn
-./longhorn-helm-deployment.sh
-kubectl apply -f longhorn-minio-secret.yaml
+# ./longhorn-helm-deployment.sh
+# kubectl apply -f longhorn-minio-secret.yaml
 
-sleep 20
+# sleep 20
 
 # install volumesnapshot crds and snapshot controller
-kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=release-5.0"
-kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=release-5.0"
+# kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=release-5.0"
+# kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=release-5.0"
 
-sleep 20
+# sleep 20
 
 # Crete volumesnapshotclass
-kubectl apply -f default-volumesnapshotclass.yaml
+
 
 # Install CSI DRIVER NFS
 helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
@@ -21,7 +21,7 @@ helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-syste
 
 sleep 20
 kubectl apply -f csi-storage-class.yaml
-
+kubectl apply -f volumesnapshotclass.yaml
 # Install nfs-subdir-external-provisioner
 # helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
 # helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=44.202.240.228 --set nfs.path=/nfs-datadir --set namespace=kube-system
