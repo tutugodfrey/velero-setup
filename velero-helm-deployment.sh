@@ -32,7 +32,9 @@ helm upgrade --install velero \
     --set configuration.backupStorageLocation[0].bucket=velero-backups-728547773713 \
     --set configuration.backupStorageLocation[0].config.region=us-east-1 \
     --set configuration.volumeSnapshotLocation[0].name=default \
-    --set configuration.volumeSnapshotLocation[0].provider=aws \
+    --set configuration.volumeSnapshotLocation[0].provider=nfs.csi.k8s.io  \
+    --set configuration.volumeSnapshotLocation[0].config.proviver=aws \
+    --set configuration.volumeSnapshotLocation[0].config.prefix=k8sbak \
     --set configuration.volumeSnapshotLocation[0].config.bucket=velero-snapshot-728547773713 \
     --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \
     --set initContainers[0].name=velero-plugin-for-aws \

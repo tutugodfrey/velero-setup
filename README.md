@@ -343,3 +343,4 @@ root@controlplane:~/velero-setup$
 
 velero restore create dev-backup-tt-restore --from-backup  dev-backup-tt --selector velero-backup-target=velero-dev-backup-test --wait
 velero restore create dev-backup-tt-restore-2 --from-backup  dev-backup-tt --selector velero-backup-target=velero-dev-backup-test --wait
+velero backup create dev-backup-tt-2 --selector velero-backup-target=velero-dev-backup-test --snapshot-move-data --wait
