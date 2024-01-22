@@ -340,3 +340,6 @@ root@controlplane:~/velero-setup$
 
 
     # --set configuration.backupStorageLocation[0].bucket=velero \
+
+velero restore create dev-backup-tt-restore --from-backup  dev-backup-tt --selector velero-backup-target=velero-dev-backup-test --wait
+velero restore create dev-backup-tt-restore-2 --from-backup  dev-backup-tt --selector velero-backup-target=velero-dev-backup-test --wait

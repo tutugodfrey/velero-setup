@@ -13,9 +13,13 @@ helm upgrade --install velero \
     --set resources.requests.memory=50Mi \
     --set resources.limits.cpu=20m \
     --set resources.limits.memory=200Mi \
+    --set nodeAgent.podVolumePath=/var/lib/kubelet/pods \
+    --set nodeAgent.privileged=true \
+    --set podSecurityContext.runAsUser=0 \
+    --set podSecurityContext.fsGroup=0 \
     --set nodeAgent.resources.requests.cpu=5m \
     --set nodeAgent.resources.requests.memory=200Mi \
-    --set nodeAgent.resources.limits.cpu=10m \
+    --set nodeAgent.resources.limits.cpu=20m \
     --set nodeAgent.resources.limits.memory=400Mi \
     --set credentials.existingSecret=velero-minio-access \
     --set configuration.logLevel=debug \

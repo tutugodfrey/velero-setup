@@ -40,6 +40,6 @@ kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio
 # Run the velero helm deployment
 ./velero-helm-deployment.sh
 kubectl apply -f velero-minio-access.yaml -n velero
-
+velero client config set features=EnableCSI  # enable csi as part of velero describe
 # Install metric server
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
