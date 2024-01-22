@@ -38,7 +38,7 @@ helm upgrade --install velero \
     --set configuration.volumeSnapshotLocation[0].provider=nfs.csi.k8s.io  \
     --set configuration.volumeSnapshotLocation[0].config.proviver=aws \
     --set configuration.volumeSnapshotLocation[0].config.prefix=k8sbak \
-    --set configuration.volumeSnapshotLocation[0].config.bucket=velero-snapshot \
+    --set configuration.volumeSnapshotLocation[0].config.bucket=velero-backups \
     --set configuration.volumeSnapshotLocation[0].config.region=us-east-1 \
     --set configuration.volumeSnapshotLocation[0].config.s3ForcePathStyle=true \
     --set configuration.volumeSnapshotLocation[0].config.s3Url=https://minio-s3.dev.compliantcloud.com \
