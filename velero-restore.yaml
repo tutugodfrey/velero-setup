@@ -1,0 +1,23 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: confirm-restore-2
+  namespace: velero
+spec:
+  backupName: dev-backup-confirm-2
+  excludedResources:
+  - nodes
+  - events
+  - events.events.k8s.io
+  - backups.velero.io
+  - restores.velero.io
+  - resticrepositories.velero.io
+  - csinodes.storage.k8s.io
+  - volumeattachments.storage.k8s.io
+  - backuprepositories.velero.io
+  hooks: {}
+  includedNamespaces:
+  - velero
+  - dev-tutug
+  - default
+  itemOperationTimeout: 4h0m0s

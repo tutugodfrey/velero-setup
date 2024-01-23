@@ -1,0 +1,20 @@
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: pvc-backup-dev
+  namespace: velero
+spec:
+  schedule: 0 */6 * * *
+  template:
+    csiSnapshotTimeout: 0s
+    hooks: {}
+    includedNamespaces:
+    - '*'
+    itemOperationTimeout: 0s
+    labelSelector:
+      matchLabels:
+        velero-backup-target: velero-dev-backup-test
+    metadata: {}
+    snapshotMoveData: true
+    ttl: 0s
+  useOwnerReferencesInBackup: false
