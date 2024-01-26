@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: copy-data-to-temp-pvc
+spec:
+  template:
+    spec:
+      containers:
+      - image: ubuntu:latest
+        imagePullPolicy: IfNotPresent
+        name: backup-copy
+        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/"]
+        volumeMounts:
+          - name: destination
+            mountPath: /tmp/destination
+          - name: source
+            mountPath: /tmp/source/
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      imagePullSecrets:
+      - name: imagepull
+      volumes:
+        - name: destination
+          persistentVolumeClaim:
+            claimName: temporary-pvc
+        - name: source
+          persistentVolumeClaim:
+            claimName: nginx-data-test
