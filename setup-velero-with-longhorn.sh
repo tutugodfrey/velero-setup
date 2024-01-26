@@ -1,16 +1,19 @@
 #! /bin/bash
 
-sudo apt update; sudo apt install nfs-common -y
-ssh node01 sudo apt update;
-ssh node01 sudo apt install nfs-common -y;
+# Install Longhorn
+./longhorn-helm-deployment.sh
+kubectl apply -f longhorn-minio-secret.yaml
 
-# Install CSI DRIVER NFS
-helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-helm install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version v4.5.0 --set externalSnapshotter.enabled=true
+# install volumesnapshot crds and snapshot controller
+kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=release-5.0"
+kubectl -n kube-system create -k "github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=release-5.0"
 
+# sleep 20
+
+# Crete volumesnapshotclass
 sleep 20
-kubectl apply -f storage-class-csi-driver-nfs.yaml
-kubectl apply -f volumesnapshotclass-csi-driver-nfs.yaml
+kubectl apply -f storage-class-longhorn.yaml
+kubectl apply -f volumesnapshotclass-longhorn.yaml
 # Install nfs-subdir-external-provisioner
 # helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
 # helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=44.202.240.228 --set nfs.path=/nfs-datadir --set namespace=kube-system
@@ -25,7 +28,9 @@ cp velero-v${VELERO_VERSION}-linux-amd64/velero /usr/local/bin/
 if [[ ! -z $1 ]] && [[ $1 == 'aws' ]]; then
   # Velero with AWS
   kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access-aws.txt --dry-run=client -o yaml > velero-aws-access.yaml
-  ./velero-helm-deployment.sh
+  sed "s/nfs.csi.k8s.io/driver.longhorn.io/" velero-helm-deployment.sh  > velero-helm-deployment-longhorn.sh
+  chmod +x velero-helm-deployment-longhorn.sh
+  ./velero-helm-deployment-longhorn.sh
   kubectl apply -f velero-aws-access.yaml -n velero
   kubectl apply -f velero-repo-credentials.yaml -n velero
   velero client config set features=EnableCSI  # enable csi as part of velero describe
@@ -33,7 +38,9 @@ if [[ ! -z $1 ]] && [[ $1 == 'aws' ]]; then
 else
   # Velero with MinIO
   kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access.txt --dry-run=client -o yaml > velero-minio-access.yaml
-  ./velero-helm-deployment-minio.sh
+  sed "s/nfs.csi.k8s.io/driver.longhorn.io/" velero-helm-deployment-minio.sh > velero-helm-deployment-longhorn.sh
+  chmod +x velero-helm-deployment-longhorn.sh
+  ./velero-helm-deployment-longhorn.sh
   kubectl apply -f velero-minio-access.yaml -n velero
   kubectl apply -f velero-repo-credentials.yaml -n velero
   velero client config set features=EnableCSI  # enable csi as part of velero describe

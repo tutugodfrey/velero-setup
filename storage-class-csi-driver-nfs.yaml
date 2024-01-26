@@ -9,4 +9,3 @@ parameters:
 provisioner: nfs.csi.k8s.io 
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
-

@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: velero-backup-job
+spec:
+  template:
+    spec:
+      containers:
+      - image: ubuntu:latest
+        imagePullPolicy: IfNotPresent
+        name: create-backup
+        command: ["/bin/bash", "-c", "/scripts/setup.sh"]
+        volumeMounts:
+          - name: velero-backup-config
+            mountPath: /scripts
+          - name: velero-kube-config
+            mountPath: /kube
+        envFrom:
+        - configMapRef:
+            name: backup-job-env
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      volumes:
+        - name: velero-backup-config
+          configMap:
+            name: velero-backup-config
+            defaultMode: 0755
+            items:
+            - key: setup.sh
+              path: setup.sh
+        - name: velero-kube-config
+          secret:
+            defaultMode: 0755
+            secretName: velero-kubeconfig
+            items:
+            - key: kubeconfig
+              path: kubeconfig
