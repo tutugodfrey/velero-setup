@@ -28,11 +28,17 @@ sed "s/PVC_NAME/${PVC_NAME}/" copy-data-to-dest-pvc.yaml > copy-data-to-dest-pvc
 sed "s/PVC_NAME/${PVC_NAME}/" nginx-data-csi-dest.yaml > nginx-data-csi-dest-temp.yaml
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
 
+# Delete old jobs
+kubectl delete -f copy-data-to-hostpath-temp.yaml
+kubectl delete -f copy-data-to-dest-pvc-temp.yaml
+
 sleep 10
 
 kubectl apply -f copy-data-to-hostpath-temp.yaml
 sleep 30
 kubectl delete pvc ${PVC_NAME} --grace-period 0 now
+sleep 5
+kubectl patch pvc nginx-data-test --patch '{ "metadata": { "finalizers": null } }'
 
 sleep 20
 # Recreate PVC with new storage class
