@@ -4,7 +4,7 @@ metadata:
   labels:
     app: nginx
     velero-backup-target: velero-dev-backup-test
-  name: nginx-data-test
+  name: PVC_NAME
 spec:
   accessModes:
   - ReadWriteOnce
