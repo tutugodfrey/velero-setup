@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: velero
+resources:
+  - ../../base/velero
+  - velero-minio-access.yaml
+  - velero-backup-schedule.yaml
+
+configMapGenerator:
+  - name: velero-backup-config
+    envs:
+    - .env
+    behavior: replace
+
+replacements:
+  - source:
+      name: velero-backup-config
+      kind: ConfigMap
+      fieldPath: data.BACKUP_SCHEDULE_NAME
+    targets:
+    - select:
+        kind: Schedule
+      fieldPaths:
+      - metadata.name
+  - source:
+      name: velero-backup-config
+      kind: ConfigMap
+      fieldPath: data.BACKUP_TARGET_LABEL
+    targets:
+    - select:
+        kind: Schedule
+      fieldPaths:
+      - spec.template.labelSelector.matchLabels.velero-backup-target
