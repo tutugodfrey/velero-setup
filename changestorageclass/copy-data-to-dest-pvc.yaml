@@ -9,7 +9,7 @@ spec:
       - image: ubuntu:latest
         imagePullPolicy: IfNotPresent
         name: backup-copy
-        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/"]
+        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/; rm -rf /tmp/source/*"]
         volumeMounts:
           - name: destination
             mountPath: /tmp/destination
@@ -17,13 +17,10 @@ spec:
             mountPath: /tmp/source/
       dnsPolicy: ClusterFirst
       restartPolicy: OnFailure
-      imagePullSecrets:
-      - name: imagepull
       volumes:
         - name: source
-          hostPath:
-            path: /destination
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: temporary-pvc
         - name: destination
           persistentVolumeClaim:
             claimName: PVC_NAME

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: nginx
+    velero-backup-target: velero-dev-backup-test
+  name: PVC_NAME
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: STORAGE_SIZE
+  storageClassName: csi-nfs-client
+  volumeMode: Filesystem

@@ -17,12 +17,11 @@ spec:
             mountPath: /tmp/source/
       dnsPolicy: ClusterFirst
       restartPolicy: OnFailure
-      imagePullSecrets:
-      - name: imagepull
       volumes:
         - name: destination
-          persistentVolumeClaim:
-            claimName: temporary-pvc
+          hostPath:
+            path: /destination
+            type: DirectoryOrCreate
         - name: source
           persistentVolumeClaim:
             claimName: nginx-data-test

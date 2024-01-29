@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: copy-data-to-temp-pvc
+spec:
+  template:
+    spec:
+      containers:
+      - image: ubuntu:latest
+        imagePullPolicy: IfNotPresent
+        name: backup-copy
+        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/"]
+        volumeMounts:
+          - name: destination
+            mountPath: /tmp/destination
+          - name: source
+            mountPath: /tmp/source/
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      volumes:
+        - name: source
+          persistentVolumeClaim:
+            claimName: PVC_NAME
+        - name: destination
+          persistentVolumeClaim:
+            claimName: temporary-pvc
