@@ -6,7 +6,7 @@ spec:
   template:
     spec:
       containers:
-      - image: ubuntu:latest
+      - image: busybox:latest
         imagePullPolicy: IfNotPresent
         name: backup-copy
         command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/"]

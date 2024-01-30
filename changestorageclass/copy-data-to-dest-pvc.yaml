@@ -6,10 +6,10 @@ spec:
   template:
     spec:
       containers:
-      - image: ubuntu:latest
+      - image: busybox:latest
         imagePullPolicy: IfNotPresent
         name: backup-copy
-        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/; rm -rf /tmp/source/*"]
+        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/; ls -al /tmp/destination/; rm -rf /tmp/source/*"]
         volumeMounts:
           - name: destination
             mountPath: /tmp/destination
