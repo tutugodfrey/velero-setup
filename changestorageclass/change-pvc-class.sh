@@ -32,7 +32,7 @@ if [[ ! -z $4 ]]; then
   RESOURCE_TYPE=$4
 fi
 
-if [[ ! -z $1 ]]; then
+if [[ ! -z $5 ]]; then
   REPLICAS=$5
 fi
 
@@ -45,7 +45,7 @@ kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
 
 if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
-  for INDEX in {0..$REPLICA_INDEX}; do
+  for INDEX in $(bash -c "echo {0..${REPLICA_INDEX}}"); do
     PVC_NAME_STS=${PVC_NAME}-$INDEX
     sed "s/PVC_NAME/${PVC_NAME_STS}/" copy-data-to-temporary-pvc.yaml > copy-data-to-temporary-pvc-temp.yaml
     sed "s/PVC_NAME/${PVC_NAME_STS}/" copy-data-to-dest-pvc.yaml > copy-data-to-dest-pvc-temp.yaml
@@ -59,7 +59,7 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
     kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
     sleep 50
 
-    kubectl delete pvc ${PVC_NAME} --grace-period=0 --force
+    kubectl delete pvc ${PVC_NAME_STS} --grace-period=0 --force
     sleep 10
     kubectl patch pvc nginx-data-test --patch '{ "metadata": { "finalizers": null } }'
 
