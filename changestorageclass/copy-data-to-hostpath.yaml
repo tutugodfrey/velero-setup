@@ -9,7 +9,7 @@ spec:
       - image: busybox:latest
         imagePullPolicy: IfNotPresent
         name: backup-copy
-        command: ["/bin/bash", "-c", "cp -r /tmp/source/* /tmp/destination/"]
+        command: ["/bin/sh", "-c", "cp -r /tmp/source/* /tmp/destination/"]
         volumeMounts:
           - name: destination
             mountPath: /tmp/destination
