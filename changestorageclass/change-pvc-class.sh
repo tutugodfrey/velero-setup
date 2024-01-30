@@ -59,9 +59,9 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
     kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
     sleep 50
 
-    kubectl delete pvc ${PVC_NAME_STS} --grace-period=0 --force
+    kubectl delete pvc ${PVC_NAME_STS} --grace-period=0
     sleep 10
-    kubectl patch pvc nginx-data-test --patch '{ "metadata": { "finalizers": null } }'
+    kubectl patch pvc ${PVC_NAME_STS} --patch '{ "metadata": { "finalizers": null } }'
 
     # Create the Destination PVC with new storage class
     kubectl apply -f destination-pvc-temp.yaml
@@ -83,9 +83,9 @@ else
 
   kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
   sleep 50
-  kubectl delete pvc ${PVC_NAME} --grace-period=0 --force
+  kubectl delete pvc ${PVC_NAME} --grace-period=0
   sleep 10
-  kubectl patch pvc nginx-data-test --patch '{ "metadata": { "finalizers": null } }'
+  kubectl patch pvc ${PVC_NAME} --patch '{ "metadata": { "finalizers": null } }'
 
   # Create the Destination PVC with new storage class
   kubectl apply -f destination-pvc-temp.yaml
