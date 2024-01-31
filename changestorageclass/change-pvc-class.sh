@@ -34,7 +34,7 @@ function wait_for_pvc {
   done
 }
 
-function wait_for_pod_scaldown {
+function wait_for_pod_scaledown {
   until [[ $(kubectl get $1 $2 -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
     echo Wailting for $1 $2 to scale to 0;
     sleep 5;
@@ -61,7 +61,7 @@ wait_for_pvc 'temporary-pvc'
 
 # Scale down the deployment and wait for until scale to 0
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
-wait_for_pod_scaldown $RESOURCE_TYPE $RESOURCE_NAME;
+wait_for_pod_scaledown $RESOURCE_TYPE $RESOURCE_NAME;
 
 if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
@@ -103,19 +103,23 @@ else
   # Delete old jobs
   kubectl delete -f copy-data-to-temporary-pvc-temp.yaml
   kubectl delete -f copy-data-to-dest-pvc-temp.yaml
+  sleep 5
 
   kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
-  sleep 50
-  kubectl delete pvc ${PVC_NAME} --grace-period=0
-  sleep 10
+  wait_for_job 'copy-data-to-temp-pvc'
+
+  kubectl delete pvc ${PVC_NAME} --grace-period=0 --force now
+  sleep 5
   kubectl patch pvc ${PVC_NAME} --patch '{ "metadata": { "finalizers": null } }'
+  sleep 5
 
   # Create the Destination PVC with new storage class
   kubectl apply -f destination-pvc-temp.yaml
-  sleep 10
+  wait_for_pvc $PVC_NAME_STS
   # COPY data to recreated PVC
   kubectl apply -f copy-data-to-dest-pvc-temp.yaml
+  wait_for_job 'copy-data-to-dest-pvc'
 fi
 
-sleep 50
+sleep 5
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=$REPLICAS
