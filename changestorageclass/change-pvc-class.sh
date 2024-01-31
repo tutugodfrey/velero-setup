@@ -20,23 +20,23 @@ function help() {
   exit 0
 }
 
-function wait_for_job ( JOB_NAME ) {
-  until [[ $(kubectl get job $JOB_NAME -o jsonpath="{ .status.succeeded}") == 1 ]]; do
-    echo Waiting for job $JOB_NAME to succeed
+function wait_for_job {
+  until [[ $(kubectl get job $1 -o jsonpath="{ .status.succeeded}") == 1 ]]; do
+    echo Waiting for job $1 to succeed
     sleep 5
   done
 }
 
-function wait_for_pvc ( PVC_NAME_ ) {
-  until [[ $(kubectl get pvc ${PVC_NAME_} -o jsonpath="{ .status.phase}") == 'Bound' ]]; do
+function wait_for_pvc {
+  until [[ $(kubectl get pvc $1 -o jsonpath="{ .status.phase}") == 'Bound' ]]; do
     echo Waiting for pvc to bound
     sleep 5
   done
 }
 
-function wait_for_pod_scaldown ( RESOURCE_TYPE_, RESOURCE_NAME_ ) {
-  until [[ $(kubectl get $RESOURCE_TYPE_ $RESOURCE_NAME_ -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
-    echo Wailting for $RESOURCE_TYPE_ $RESOURCE_NAME_ to scale to 0;
+function wait_for_pod_scaldown {
+  until [[ $(kubectl get $1 $2 -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
+    echo Wailting for $1 $2 to scale to 0;
     sleep 5;
   done;
 }
@@ -57,11 +57,11 @@ fi
 
 # Create temporary pvc
 kubectl apply -f temporary-pvc.yaml
-wait_for_pvc( 'temporary-pvc' )
+wait_for_pvc 'temporary-pvc'
 
 # Scale down the deployment and wait for until scale to 0
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
-wait_for_pod_scaldown( $RESOURCE_TYPE, $RESOURCE_NAME )
+wait_for_pod_scaldown $RESOURCE_TYPE $RESOURCE_NAME;
 
 if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
@@ -78,7 +78,7 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
     sleep 5
 
     kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
-    wait_for_job( 'copy-data-to-temp-pvc' )
+    wait_for_job 'copy-data-to-temp-pvc'
 
     kubectl delete pvc ${PVC_NAME_STS} --grace-period=0 --force now
     sleep 5
@@ -87,11 +87,11 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
 
     # Create the Destination PVC with new storage class
     kubectl apply -f destination-pvc-temp.yaml
-    wait_for_pvc( $PVC_NAME_STS )
+    wait_for_pvc $PVC_NAME_STS
 
     # COPY data to recreated PVC
     kubectl apply -f copy-data-to-dest-pvc-temp.yaml
-    wait_for_job( 'copy-data-to-dest-pvc' )
+    wait_for_job 'copy-data-to-dest-pvc'
     echo $i;
   done;
 else
