@@ -92,6 +92,10 @@ velero restore create --from-backup nginx-data-backup --selector target=backup
 velero restore create --from-backup nginx-data-backup
 ```
 
+```bash
+./change-pvc-class.sh mongo-data-mongo-st mongo-st 600M sts 3
+```
+
 <!-- job copy-data-to-temp-pvc
 
 status:
@@ -106,3 +110,4 @@ status:
   succeeded: 1
   terminating: 0
   uncountedTerminatedPods: {} -->
+
