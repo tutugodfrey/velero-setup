@@ -34,8 +34,15 @@ function wait_for_pvc {
   done
 }
 
-function wait_for_pod_scaledown {
+function wait_for_sts_scaledown {
   until [[ $(kubectl get $1 $2 -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
+    echo Wailting for $1 $2 to scale to 0;
+    sleep 5;
+  done;
+}
+
+function wait_for_deployment_scaledown {
+  until [[ $(kubectl get $1 $2 -o jsonpath="{ .status.availableReplicas }") == "" ]]; do
     echo Wailting for $1 $2 to scale to 0;
     sleep 5;
   done;
@@ -61,7 +68,6 @@ wait_for_pvc 'temporary-pvc'
 
 # Scale down the deployment and wait for until scale to 0
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
-wait_for_pod_scaledown $RESOURCE_TYPE $RESOURCE_NAME;
 
 if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
@@ -72,6 +78,8 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
     sed "s/PVC_NAME/${PVC_NAME_STS}/" destination-pvc.yaml > destination-pvc-temp.yaml
     sed -i "s/STORAGE_SIZE/${STORAGE_SIZE}/" destination-pvc-temp.yaml
 
+    wait_for_sts_scaledown $RESOURCE_TYPE $RESOURCE_NAME;
+    
     # Delete old jobs
     kubectl delete -f copy-data-to-temporary-pvc-temp.yaml
     kubectl delete -f copy-data-to-dest-pvc-temp.yaml
@@ -99,7 +107,9 @@ else
   sed "s/PVC_NAME/${PVC_NAME}/" copy-data-to-dest-pvc.yaml > copy-data-to-dest-pvc-temp.yaml
   sed "s/PVC_NAME/${PVC_NAME}/" destination-pvc.yaml > destination-pvc-temp.yaml
   sed -i "s/STORAGE_SIZE/${STORAGE_SIZE}/" destination-pvc-temp.yaml
-
+  
+  wait_for_deployment_scaledown $RESOURCE_TYPE $RESOURCE_NAME;
+  
   # Delete old jobs
   kubectl delete -f copy-data-to-temporary-pvc-temp.yaml
   kubectl delete -f copy-data-to-dest-pvc-temp.yaml
