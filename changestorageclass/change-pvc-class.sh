@@ -20,13 +20,11 @@ function help() {
   exit 0
 }
 
-
 if [[ ! -z $1 ]] && [[ $1 == '--help' ]]; then
   help
 elif [[ -z $1 ]] ||  [[ -z $2 ]] ||  [[ -z $3 ]]; then
   help
 fi
-
 
 if [[ ! -z $4 ]]; then
   RESOURCE_TYPE=$4
@@ -40,8 +38,12 @@ fi
 kubectl apply -f temporary-pvc.yaml
 sleep 10
 
-# Scale down the deployment
+# Scale down the deployment and wait for until scale to 0
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
+until [[ $(kubectl get deployment nginx-test -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
+  echo Wailting for ${RESOURCE_TYPE} ${RESOURCE_NAME} to scale to 0;
+  sleep 2;
+done;
 
 if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
@@ -55,11 +57,12 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
     # Delete old jobs
     kubectl delete -f copy-data-to-temporary-pvc-temp.yaml
     kubectl delete -f copy-data-to-dest-pvc-temp.yaml
+    sleep 5
 
     kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
     sleep 50
 
-    kubectl delete pvc ${PVC_NAME_STS} --grace-period=0
+    kubectl delete pvc ${PVC_NAME_STS} --grace-period=0 --force now
     sleep 10
     kubectl patch pvc ${PVC_NAME_STS} --patch '{ "metadata": { "finalizers": null } }'
 
