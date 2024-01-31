@@ -8,6 +8,6 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 200Mi
   storageClassName: csi-nfs-client
   volumeMode: Filesystem

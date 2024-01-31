@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: copy-data-to-temp-pvc-dest
+  name: copy-data-to-dest-pvc
 spec:
   template:
     spec:

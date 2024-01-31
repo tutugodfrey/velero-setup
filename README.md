@@ -91,3 +91,18 @@ velero restore create --from-backup nginx-data-backup --selector target=backup
 
 velero restore create --from-backup nginx-data-backup
 ```
+
+<!-- job copy-data-to-temp-pvc
+
+status:
+  completionTime: "2024-01-31T02:35:38Z"
+  conditions:
+  - lastProbeTime: "2024-01-31T02:35:38Z"
+    lastTransitionTime: "2024-01-31T02:35:38Z"
+    status: "True"
+    type: Complete
+  ready: 0
+  startTime: "2024-01-31T02:34:52Z"
+  succeeded: 1
+  terminating: 0
+  uncountedTerminatedPods: {} -->

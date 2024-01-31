@@ -20,6 +20,27 @@ function help() {
   exit 0
 }
 
+function wait_for_job ( JOB_NAME ) {
+  until [[ $(kubectl get job $JOB_NAME -o jsonpath="{ .status.succeeded}") == 1 ]]; do
+    echo Waiting for job $JOB_NAME to succeed
+    sleep 5
+  done
+}
+
+function wait_for_pvc ( PVC_NAME_ ) {
+  until [[ $(kubectl get pvc ${PVC_NAME_} -o jsonpath="{ .status.phase}") == 'Bound' ]]; do
+    echo Waiting for pvc to bound
+    sleep 5
+  done
+}
+
+function wait_for_pod_scaldown ( RESOURCE_TYPE_, RESOURCE_NAME_ ) {
+  until [[ $(kubectl get $RESOURCE_TYPE_ $RESOURCE_NAME_ -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
+    echo Wailting for $RESOURCE_TYPE_ $RESOURCE_NAME_ to scale to 0;
+    sleep 5;
+  done;
+}
+
 if [[ ! -z $1 ]] && [[ $1 == '--help' ]]; then
   help
 elif [[ -z $1 ]] ||  [[ -z $2 ]] ||  [[ -z $3 ]]; then
@@ -36,14 +57,11 @@ fi
 
 # Create temporary pvc
 kubectl apply -f temporary-pvc.yaml
-sleep 10
+wait_for_pvc( 'temporary-pvc' )
 
 # Scale down the deployment and wait for until scale to 0
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
-until [[ $(kubectl get deployment nginx-test -o jsonpath="{ .status.availableReplicas }") == 0 ]]; do
-  echo Wailting for ${RESOURCE_TYPE} ${RESOURCE_NAME} to scale to 0;
-  sleep 2;
-done;
+wait_for_pod_scaldown( $RESOURCE_TYPE, $RESOURCE_NAME )
 
 if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
@@ -60,18 +78,20 @@ if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
     sleep 5
 
     kubectl apply -f copy-data-to-temporary-pvc-temp.yaml
-    sleep 50
+    wait_for_job( 'copy-data-to-temp-pvc' )
 
     kubectl delete pvc ${PVC_NAME_STS} --grace-period=0 --force now
-    sleep 10
+    sleep 5
     kubectl patch pvc ${PVC_NAME_STS} --patch '{ "metadata": { "finalizers": null } }'
+    sleep 5
 
     # Create the Destination PVC with new storage class
     kubectl apply -f destination-pvc-temp.yaml
-    sleep 10
+    wait_for_pvc( $PVC_NAME_STS )
+
     # COPY data to recreated PVC
     kubectl apply -f copy-data-to-dest-pvc-temp.yaml
-    sleep 50
+    wait_for_job( 'copy-data-to-dest-pvc' )
     echo $i;
   done;
 else
