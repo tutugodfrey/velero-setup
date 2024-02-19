@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: busyboxer
+spec:
+  template:
+    spec:
+      containers:
+      - image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        name: backup-copy
+        command: ["/bin/sh", "-c", "while true; do echo user $(id -u) group $(id -g) is working; sleep 20; done;"]
+          #command: ["/bin/sh", "-c", "cp -r /tmp/source/* /tmp/destination/; ls -al /tmp/destination/;"]
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure

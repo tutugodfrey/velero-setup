@@ -5,16 +5,22 @@ metadata:
 spec:
   template:
     spec:
+      securityContext:
+        #fsGroup: 103 # for postgres
+        fsGroup: 472
       containers:
       - image: busybox:latest
         imagePullPolicy: IfNotPresent
         name: backup-copy
-        command: ["/bin/sh", "-c", "cp -r /tmp/source/* /tmp/destination/; ls -al /tmp/destination/; rm -rf /tmp/source/*"]
+        command: ["/bin/sh", "-c", "cp -ar /tmp/source/* /tmp/destination/; ls -al /tmp/destination/; rm -rf /tmp/source/*"]
         volumeMounts:
           - name: destination
             mountPath: /tmp/destination
           - name: source
             mountPath: /tmp/source/
+        securityContext:
+          #runAsUser: 101 # for postgres
+          runAsUser: 472
       dnsPolicy: ClusterFirst
       restartPolicy: OnFailure
       volumes:

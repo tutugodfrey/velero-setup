@@ -1,32 +1,27 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: copy-data-to-temp-pvc
+  name: copy-data-to-dest-pvc
 spec:
   template:
     spec:
-      securityContext:
-        #fsGroup: 103 # For postgres
-        fsGroup: 472
+      #securityContext:
+        #  fsGroup: 1001
       containers:
       - image: busybox:latest
         imagePullPolicy: IfNotPresent
         name: backup-copy
-        command: ["/bin/sh", "-c", "cp -ar /tmp/source/* /tmp/destination/; ls -al /tmp/destination/;"]
+        command: ["/bin/sh", "-c", "while true; do echo user $(id -u) group $(id -g) is working; sleep 20; done;"]
+          #command: ["/bin/sh", "-c", "cp -r /tmp/source/* /tmp/destination/; ls -al /tmp/destination/;"]
         volumeMounts:
-          - name: destination
-            mountPath: /tmp/destination
           - name: source
             mountPath: /tmp/source/
         securityContext:
-          #runAsUser: 101 # For postgres
-          runAsUser: 472
+          runAsUser: 1001
+            #runAsGroup: 1001
       dnsPolicy: ClusterFirst
       restartPolicy: OnFailure
       volumes:
         - name: source
-          persistentVolumeClaim:
-            claimName: PVC_NAME
-        - name: destination
           persistentVolumeClaim:
             claimName: temporary-pvc

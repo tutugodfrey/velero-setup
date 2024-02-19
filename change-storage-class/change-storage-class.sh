@@ -44,6 +44,11 @@ function wait_for_scaledown {
       echo Wailting for $1 $2 to scale to 0;
       sleep 5;
     done;
+  elif [[ $1 == 'strimzipodsets' ]]; then
+    until [[ $(kubectl get $1 $2 -o jsonpath="{ .status.currentPods }") == 0 ]]; do
+      echo Wailting for $1 $2 to scale to 0;
+      sleep 5;
+    done;
   elif [[ $1 == "deploy" ]] || [[ $1 == "deployment" ]]; then
     until [[ $(kubectl get $1 $2 -o jsonpath="{ .status.availableReplicas }") == "" ]]; do
       echo Wailting for $1 $2 to scale to 0;
@@ -105,7 +110,7 @@ wait_for_pvc 'temporary-pvc'
 # Scale down the deployment and wait for until scale to 0
 kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=0
 
-if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]]; then
+if [[ $RESOURCE_TYPE == 'sts' ]] || [[ $RESOURCE_TYPE == 'statefulset' ]] || [[ $RESOURCE_TYPE == 'strimzipodsets' ]]; then
   REPLICA_INDEX=$((REPLICAS-1))
   for INDEX in $(bash -c "echo {0..${REPLICA_INDEX}}"); do
     PVC_NAME_STS=${PVC_NAME}-$INDEX
@@ -119,5 +124,15 @@ else
   change_storage_class $PVC_NAME
 fi
 
-sleep 5
-kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=$REPLICAS
+echo This is an opportunity to verify permission on persistent volumes before scaling up
+read -p 'Confirm scale up (yes/no): ' confirmation
+
+echo $confirmation
+
+if [[ $confirmation == 'yes' ]]; then
+  sleep 5
+  kubectl scale ${RESOURCE_TYPE} ${RESOURCE_NAME} --replicas=$REPLICAS
+else
+  exit 1
+fi
+
