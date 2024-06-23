@@ -24,7 +24,8 @@ cp velero-v${VELERO_VERSION}-linux-amd64/velero /usr/local/bin/
 # Run the velero helm deployment
 if [[ ! -z $1 ]] && [[ $1 == 'aws' ]]; then
   # Velero with AWS
-  kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access-aws.txt --dry-run=client -o yaml > velero-aws-access.yaml
+  cat velero-minio-access-aws.txt | base64 -d > velero-minio-access-aws-decoded.txt
+  kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access-aws-decoded.txt --dry-run=client -o yaml > velero-aws-access.yaml
   ./velero-helm-deployment.sh
   kubectl apply -f velero-aws-access.yaml -n velero
   kubectl apply -f velero-repo-credentials.yaml -n velero
@@ -32,7 +33,8 @@ if [[ ! -z $1 ]] && [[ $1 == 'aws' ]]; then
 
 else
   # Velero with MinIO
-  kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access.txt --dry-run=client -o yaml > velero-minio-access.yaml
+  cat velero-minio-access.txt | base64 -d > velero-minio-access-decoded.txt
+  kubectl create secret generic velero-minio-access --from-file=cloud=velero-minio-access-decoded.txt --dry-run=client -o yaml > velero-minio-access.yaml
   ./velero-helm-deployment-minio.sh
   kubectl apply -f velero-minio-access.yaml -n velero
   kubectl apply -f velero-repo-credentials.yaml -n velero

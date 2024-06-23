@@ -6,6 +6,9 @@
 
 [longhorn](https://github.com/longhorn/longhorn/)
 
+## ALTERNATIVE TO VELERO
+[TRILLO](https://docs.trilio.io/trilio-data)
+
 Install and configure velero backup and restore procedures
 
 The setup.sh file will install velero cli, create velero minio access secret and deploy velero with helm

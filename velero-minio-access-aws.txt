@@ -1,3 +1,1 @@
-[default]
-aws_access_key_id = AKIA2TIGUZUI2RQULM2Y
-aws_secret_access_key = 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
+W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gQUtJQTJUSUdVWlVJMlJRVUxNMlkKYXdzX3NlY3JldF9hY2Nlc3Nfa2V5ID0gbkRUVkpvTmI2UThxd2kyL2JHM3Q1VnFWdHhEMythRlQ1Q1czVVorawo=
