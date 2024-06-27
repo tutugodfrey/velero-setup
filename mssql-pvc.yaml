@@ -6,7 +6,7 @@ metadata:
     app: atreview-client-stub-mssql
   name: mssql-pvc
 spec:
-  storageClassName: longhorn
+  storageClassName: longhorn-crypto-global
   accessModes:
   - ReadWriteOnce
   resources:

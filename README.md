@@ -114,3 +114,15 @@ status:
   terminating: 0
   uncountedTerminatedPods: {} -->
 
+
+# Longhorn Deployment
+
+```bash
+./longhorn-helm-deployment.sh
+
+For encrypted volume
+kubectl apply -f longhorn-encryption-secret.yaml
+kubectl apply -f longhorn-encryption-storageclass.yaml
+kubectl apply -f mssql-pvc.yaml
+kubectl apply -f pod1.yaml
+```
