@@ -7,5 +7,5 @@ helm upgrade --install longhorn \
     --namespace longhorn-system \
     --create-namespace \
     --values longhorn-values.yaml \
-    --version 1.4.0
+    --version 1.6.2
 

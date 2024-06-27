@@ -13,5 +13,5 @@ defaultSettings:
   replicaZoneSoftAntiAffinity: true
   defaultReplicaCount: 1
   longhornUI:
-    replicas: 0
+    replicas: 1
 
