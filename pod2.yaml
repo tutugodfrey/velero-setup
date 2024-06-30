@@ -3,8 +3,8 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    run: pod1
-  name: pod1
+    run: pod2
+  name: pod2
 spec:
   containers:
   - image: busybox
@@ -20,5 +20,5 @@ spec:
   volumes:
   - name: storage
     persistentVolumeClaim:
-      claimName: mssql-pvc
+      claimName: mssql-pvc-enc
 status: {}
