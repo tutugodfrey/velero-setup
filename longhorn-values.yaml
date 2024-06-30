@@ -1,6 +1,6 @@
 persistence:
   # since we only have one node, we can have only 1 replica
-  defaultClassReplicaCount: 1
+  defaultClassReplicaCount: 2
 
 defaultSettings:
   # This tells Longhorn to use the 'longhorn' bucket of our S3.
@@ -12,6 +12,10 @@ defaultSettings:
   replicaSoftAntiAffinity: true
   replicaZoneSoftAntiAffinity: true
   defaultReplicaCount: 1
-  longhornUI:
-    replicas: 1
+  createDefaultDiskLabeledNodes: true  # nodes with the label "node.longhorn.io/create-default-disk=true"
+  defaultDataPath: /var/lib/longhorn/
+longhornUI:
+  replicas: 1
+ingress:
+  enabled: true
 
